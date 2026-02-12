@@ -23,10 +23,13 @@ const EditJobPage = () => {
       }
       const data = await res.json();
       setTitle(data.title);
+      setType(data.type);
       setDescription(data.description);
       setCompanyName(data.company.name);
       setContactEmail(data.company.contactEmail);
       setSalary(data.salary);
+      setLocation(data.location);
+      setContactPhone(data.contactPhone);
     } catch (error) {
       console.error("Error fetching job:", error);
     }
@@ -64,6 +67,10 @@ const submitForm = (e) => {
     description,
     company: { name: companyName, contactEmail },
     salary,
+    type,
+    location,
+    contactPhone,
+
   };
 
   updateJob(updatedJob);
