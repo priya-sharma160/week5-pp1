@@ -13,10 +13,46 @@ const AddJobPage = () => {
 
   const navigate = useNavigate();
 
-  const submitForm = (e) => {
-    e.preventDefault();
-    console.log("AddJobPage");
+ const submitForm = (e) => {
+  e.preventDefault();
+  if (!title || !description || !companyName || !contactEmail || !salary) {
+    console.log("Please fill in all fields");
+    return;
+  }
+
+  const newJob = {
+    title,
+    type,
+    description,
+    company: { 
+        name: companyName, 
+        contactEmail ,
+        contactPhone
+    },
+    location,
+    salary,
   };
+
+  addJob(newJob);
+};
+
+const addJob = async (newJob) => {
+  try {
+    const res = await fetch("/api/jobs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newJob),
+    });
+    if (res.ok) {
+      console.log("Job added successfully!", newJob);
+      navigate("/");
+    } else {
+      console.error("Failed to add job");
+    }
+  } catch (error) {
+    console.error("Error adding job:", error);
+  }
+};
 
   return (
     <div className="create">
