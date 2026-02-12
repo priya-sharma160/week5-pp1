@@ -3,34 +3,60 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 
 const JobPage = () => {
   const { id } = useParams();
-  const [job, setJob] = useState(null);
   const navigate = useNavigate();
+  const [job, setJob] = useState([]);
+  const [loading, setLoading]= useState(true);
 
+useEffect(() => {
+  const fetchSingleJob = async () => {
+    try {
+      const res = await fetch(`/api/jobs/${id}`);
+      const data = await res.json();
+      setJob(data)
+      console.log(job)
+    } catch (error) {
+      console.error("Failed to fetch jobs:", error);
+    }
+    finally{
+      setLoading(false)
+    }
+  };
+  fetchSingleJob();
+}, [id]);
   const deleteJob = async () => {
     console.log(JobPage);
   };
 
-  if (!job) {
-    return <div>Loading...</div>;
+  if(!job){
+    return(<div>loading...</div>)
   }
 
-  return (
-    <div className="job-details">
+ return (
+  <div>
+ <div className="job-preview">
+  {loading ? (
+    <p>Loading...</p>
+  ) : (
+    <>
       <h2>{job.title}</h2>
       <p>Type: {job.type}</p>
       <p>Description: {job.description}</p>
       <p>Company: {job.company.name}</p>
-      <p>Contact Email: {job.company.contactEmail}</p>
-      <p>Contact Phone: {job.company.contactPhone}</p>
-      <p>Location: {job.location}</p>
-      <p>Salary: {job.salary}</p>
-      <p>Posted Date: {job.postedDate}</p>
-      <Link to={`/edit-job/${id}`}>
-        <button>Edit Job</button>
-      </Link>
-      <button onClick={deleteJob}>Delete Job</button>
-    </div>
-  );
+      <p>Email: {job.company.contactEmail}</p>
+      <p>Phone: {job.company.contactPhone}</p>
+      <button onClick={() => onDeleteClick(job._id)}>
+        delete
+      </button>
+      <button onClick={() => navigate(`/edit-job/${job._id}`)}>
+        edit
+      </button>
+    </>
+  )}
+</div>
+
+  
+  </div>
+);
 };
 
 export default JobPage;

@@ -3,14 +3,27 @@ import { useEffect, useState } from "react";
 
 const Home = () => {
   const [jobs, setJobs] = useState([]);
-   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch("/api/jobs");
-      const result = await response.json();
-      setJobs(result);
-    };
-    fetchData();
-  }, []);
+
+  const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchJobs = async () => {
+    try {
+      const res = await fetch("/api/jobs");
+      const data = await res.json();
+      setJobs(data);
+    } catch (error) {
+      console.error("Failed to fetch jobs:", error);
+    } finally {
+      setLoading(false); // Stop loading after fetch completes
+    }
+  };
+  fetchJobs();
+}, []);
+
+if (loading) {
+  return <p>Loading jobs...</p>;
+}
 
   return (
     <div className="home">

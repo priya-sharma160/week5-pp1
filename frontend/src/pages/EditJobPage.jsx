@@ -14,42 +14,62 @@ const EditJobPage = () => {
   const [location, setLocation] = useState("");
   const [salary, setSalary] = useState("");
 
-  useEffect(() => {
-    const fetchJob = async () => {
-      try {
-        const res = await fetch(`/api/jobs/${id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!res.ok) {
-          throw new Error("Failed to fetch job");
-        }
-        const data = await res.json();
-        setTitle(data.title);
-        setType(data.type);
-        setDescription(data.description);
-        setCompanyName(data.company.name);
-        setContactEmail(data.company.contactEmail);
-        setContactPhone(data.company.contactPhone);
-        setLocation(data.location);
-        setSalary(data.salary);
-      } catch (error) {
-        console.log("Error fetching data", error);
+ useEffect(() => {
+  const fetchJob = async () => {
+    try {
+      const res = await fetch(`/api/jobs/${id}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch job");
       }
-    };
-    fetchJob();
-  }, [id]);
+      const data = await res.json();
+      setTitle(data.title);
+      setDescription(data.description);
+      setCompanyName(data.company.name);
+      setContactEmail(data.company.contactEmail);
+      setSalary(data.salary);
+    } catch (error) {
+      console.error("Error fetching job:", error);
+    }
+  };
+  fetchJob();
+}, [id]);
 
-  const submitForm = (e) => {
-    e.preventDefault();
-    console.log("EditJobPage");
+  const updateJob = async (updatedJob) => {
+  try {
+    const res = await fetch(`/api/jobs/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedJob),
+    });
+    if (res.ok) {
+      console.log("Job updated successfully!");
+      navigate(`/jobs/${id}`);
+    } else {
+      console.error("Failed to update job");
+    }
+  } catch (error) {
+    console.error("Error updating job:", error);
+  }
+};
+
+const submitForm = (e) => {
+  e.preventDefault();
+  if (!title || !description || !companyName || !contactEmail || !salary) {
+    alert("Please fill in all fields");
+    return;
+  }
+
+  const updatedJob = {
+    title,
+    description,
+    company: { name: companyName, contactEmail },
+    salary,
   };
 
-  const cancelEdit = () => {
-    console.log("cancelEdit");
-  };
+  updateJob(updatedJob);
+};
+
+const cancelEdit = () => navigate(`/jobs/${id}`);
 
   return (
     <div className="create">
